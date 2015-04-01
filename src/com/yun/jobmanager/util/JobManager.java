@@ -12,6 +12,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.HandlerThread;
 
@@ -89,6 +90,9 @@ public class JobManager {
 			Handler handler = new Handler(thread.getLooper());
 			handler.postDelayed(job.runnable, job.delayMillis);
 		}
+		if (job.task != null) {
+			job.task.execute();
+		}
 	}
 
 	public class Job {
@@ -96,6 +100,7 @@ public class JobManager {
 		public Runnable runnable;
 		public int delayMillis = 0;
 		public boolean isRunInUiTherad;
+		public AsyncTask task;
 	}
 
 	private class JobBroadcastReceiver extends BroadcastReceiver {
@@ -114,6 +119,9 @@ public class JobManager {
 					} else if (job.runnable != null) {
 						Handler handler = new Handler(thread.getLooper());
 						handler.postDelayed(job.runnable, job.delayMillis);
+					}
+					if (job.task != null) {
+						job.task.execute();
 					}
 					return;
 				}
